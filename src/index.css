@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, "Segoe UI", sans-serif;
+  color: #2a2117;
+  background: #f6f1e7;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(245, 158, 11, 0.12), transparent 0 35%),
+    linear-gradient(180deg, #f8f3ea 0%, #f4efe4 100%);
+}
+
+.rd3t-link {
+  stroke: #b98a52;
+  stroke-width: 2.5px;
+}
+
+.soft-panel {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.85);
+}
