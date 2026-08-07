@@ -19,14 +19,17 @@ const provider = new GoogleAuthProvider()
 
 function formatFirebaseError(error: unknown): string {
   const code = typeof error === 'object' && error && 'code' in error ? String(error.code) : ''
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : 'this site'
 
   switch (code) {
     case 'auth/popup-closed-by-user':
       return 'The Google sign-in popup was closed before completing login.'
     case 'auth/popup-blocked':
-      return 'Your browser blocked the sign-in popup. Please allow popups for localhost.'
+      return `Your browser blocked the sign-in popup. Please allow popups for ${hostname}.`
     case 'auth/unauthorized-domain':
-      return 'This domain is not authorized in Firebase. Add localhost in Firebase Authentication > Settings > Authorized domains.'
+      return hostname === 'localhost'
+        ? 'This domain is not authorized in Firebase. Add localhost in Firebase Authentication > Settings > Authorized domains.'
+        : `This domain is not authorized in Firebase. Add ${hostname} in Firebase Authentication > Settings > Authorized domains. Keep localhost there too for local development.`
     case 'auth/operation-not-allowed':
       return 'Google sign-in is not enabled in Firebase Authentication. Enable the Google provider in the Firebase console.'
     case 'auth/configuration-not-found':
