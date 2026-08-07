@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getAllUsers, setUserRole } from '../services/firestoreService'
+import { initials } from '../utils/style'
 import type { AppUser, Role } from '../types'
 
 export default function AdminPage() {
@@ -9,106 +10,112 @@ export default function AdminPage() {
   const navigate = useNavigate()
   const [users, setUsers] = useState<AppUser[]>([])
   const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     if (role !== 'admin') {
       navigate('/')
       return
     }
-    getAllUsers().then(u => {
-      setUsers(u)
-      setLoading(false)
-    })
+    getAllUsers()
+      .then(u => setUsers(u))
+      .catch(() => setErrorMessage('Could not load users. Check your connection and try again.'))
+      .finally(() => setLoading(false))
   }, [role, navigate])
 
   const toggleRole = async (user: AppUser) => {
     const newRole: Role = user.role === 'editor' ? 'viewer' : 'editor'
-    await setUserRole(user.uid, newRole)
-    setUsers(prev => prev.map(u => u.uid === user.uid ? { ...u, role: newRole } : u))
+    try {
+      await setUserRole(user.uid, newRole)
+      setUsers(prev => prev.map(u => (u.uid === user.uid ? { ...u, role: newRole } : u)))
+    } catch {
+      setErrorMessage(`Could not update ${user.displayName || user.email}'s role. Try again.`)
+    }
   }
 
-  const fmt = (iso: string) => iso ? new Date(iso).toLocaleDateString() : '—'
+  const fmt = (iso: string) => (iso ? new Date(iso).toLocaleDateString() : '—')
+
+  const roleColors: Record<string, { bg: string; fg: string }> = {
+    admin: { bg: '#f0e4cd', fg: '#7a5510' },
+    editor: { bg: '#e2efe8', fg: '#1f4d3f' },
+    viewer: { bg: '#efe8db', fg: '#6d665a' },
+  }
 
   return (
-    <div className="min-h-screen bg-transparent px-4 py-4">
-      <div className="max-w-6xl mx-auto">
-        <header className="soft-panel rounded-[22px] border border-amber-100 shadow-[0_10px_30px_rgba(120,88,44,0.10)] px-6 py-4 flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl font-bold text-amber-950">Admin Dashboard</h1>
-            <p className="text-amber-700 text-sm">Manage visitors and editing permissions</p>
+    <div style={{ minHeight: '100vh', padding: '18px' }}>
+      <div style={{ maxWidth: 1040, margin: '0 auto' }}>
+        <div className="topbar" style={{ borderRadius: 18, border: '1px solid var(--line)', marginBottom: 18, boxShadow: 'var(--shadow-sm)' }}>
+          <div className="mini-crest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22V12" /><circle cx="12" cy="7" r="4" />
+              <path d="M5 22v-3a3 3 0 0 1 3-3h1" /><path d="M19 22v-3a3 3 0 0 0-3-3h-1" />
+            </svg>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate('/')}
-              className="bg-amber-100 hover:bg-amber-200 text-amber-900 px-4 py-2 rounded-full text-sm"
-            >
-              ← Back to tree
-            </button>
-            <button
-              onClick={logOut}
-              className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full text-sm"
-            >
-              Sign out
-            </button>
+          <div className="brand">
+            <div className="t">Admin dashboard</div>
+            <div className="s">Manage visitors and editing permissions</div>
           </div>
-        </header>
+          <div className="spacer" />
+          <button className="tbtn" onClick={() => navigate('/')}>← Back to tree</button>
+          <button className="tbtn solid" onClick={logOut}>Sign out</button>
+        </div>
 
-        <main>
-          {loading ? (
-            <p className="text-stone-500 text-center py-20">Loading users…</p>
-          ) : (
-            <div className="bg-white/85 rounded-[22px] border border-amber-100 shadow-[0_10px_30px_rgba(120,88,44,0.08)] overflow-x-auto">
-              <table className="min-w-full text-sm">
-              <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3 text-left">User</th>
-                  <th className="px-4 py-3 text-left">Email</th>
-                  <th className="px-4 py-3 text-left">Role</th>
-                  <th className="px-4 py-3 text-left">First visit</th>
-                  <th className="px-4 py-3 text-left">Last visit</th>
-                  <th className="px-4 py-3 text-left">Action</th>
+        {errorMessage && (
+          <div style={{ background: '#fbeceb', color: '#8a2e22', borderRadius: 14, padding: '10px 16px', fontSize: 13, marginBottom: 18 }}>
+            {errorMessage}
+          </div>
+        )}
+
+        {loading ? (
+          <p style={{ textAlign: 'center', padding: '80px 0', color: 'var(--ink-soft)' }}>Loading users…</p>
+        ) : (
+          <div style={{ background: 'var(--surface)', borderRadius: 18, border: '1px solid var(--line)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+              <thead>
+                <tr style={{ background: 'var(--surface-2)', color: 'var(--ink-faint)', textTransform: 'uppercase', fontSize: 11, letterSpacing: '.06em' }}>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>User</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>Email</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>Role</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>First visit</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>Last visit</th>
+                  <th style={{ padding: '12px 16px', textAlign: 'left' }}>Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {users.map(u => (
-                  <tr key={u.uid} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 flex items-center gap-2">
-                      <img src={u.photoURL} alt="" className="w-8 h-8 rounded-full" />
-                      <span className="font-medium text-gray-800">{u.displayName}</span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">{u.email}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                        u.role === 'admin' ? 'bg-red-100 text-red-700' :
-                        u.role === 'editor' ? 'bg-green-100 text-green-700' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-500">{fmt(u.firstVisit)}</td>
-                    <td className="px-4 py-3 text-gray-500">{fmt(u.lastVisit)}</td>
-                    <td className="px-4 py-3">
-                      {u.role !== 'admin' && (
-                        <button
-                          onClick={() => toggleRole(u)}
-                          className={`px-3 py-1 rounded text-xs font-medium transition ${
-                            u.role === 'editor'
-                              ? 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                              : 'bg-green-100 hover:bg-green-200 text-green-700'
-                          }`}
-                        >
-                          {u.role === 'editor' ? 'Revoke editor' : 'Make editor'}
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+              <tbody>
+                {users.map(u => {
+                  const rc = roleColors[u.role] ?? roleColors.viewer
+                  return (
+                    <tr key={u.uid} style={{ borderTop: '1px solid var(--line-soft)' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span className="uav" style={{ width: 30, height: 30 }}>
+                            {u.photoURL ? <img src={u.photoURL} alt="" /> : initials(u.displayName || 'U')}
+                          </span>
+                          <span style={{ fontWeight: 700 }}>{u.displayName}</span>
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 16px', color: 'var(--ink-soft)' }}>{u.email}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ background: rc.bg, color: rc.fg, padding: '3px 10px', borderRadius: 999, fontSize: 12, fontWeight: 700, textTransform: 'capitalize' }}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 16px', color: 'var(--ink-faint)' }}>{fmt(u.firstVisit)}</td>
+                      <td style={{ padding: '12px 16px', color: 'var(--ink-faint)' }}>{fmt(u.lastVisit)}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        {u.role !== 'admin' && (
+                          <button className="tbtn" onClick={() => toggleRole(u)}>
+                            {u.role === 'editor' ? 'Revoke editor' : 'Make editor'}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
-            </div>
-          )}
-        </main>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -14,8 +14,24 @@ members/{memberId}
 ├── location?: string           # e.g. "Paris, France"
 ├── birthYear?: number          # e.g. 1952
 ├── bio?: string                # free-text notes
-└── photoURL?: string           # Firebase Storage download URL
+├── photoURL?: string           # base64 data: URL (see Photo storage below)
+└── events?: LifeEvent[]        # birth / relocation / marriage / death timeline
 ```
+
+Each `LifeEvent` has a shared `{ id, type, date? }` shape plus type-specific fields:
+
+```
+birth       → place?: string
+relocation  → fromPlace?: string, toPlace?: string
+marriage    → spouseName?: string, details?: string, spousePhotoURL?: string
+death       → place?: string   # burial place
+```
+
+`events` is additive: it does not replace `location`/`birthYear`, which remain the quick-reference fields shown in the panel header and search results. See `src/types/index.ts` for the exact TypeScript union.
+
+### Photo storage
+
+Despite the Firebase Storage bucket and `storage.rules` below, photo uploads (profile photo and marriage spouse photo) are **not** stored in Firebase Storage today. `src/services/storageService.ts` compresses the image client-side (longest side ≤ 700px, JPEG quality 0.8) and stores the result as a base64 `data:` URL directly on the `members` document (`photoURL` / `spousePhotoURL`). This keeps things simple for the small size of this dataset but means the Storage bucket and its rules are currently unused, and a member with several marriage photos could approach Firestore's 1MiB per-document limit.
 
 **Firestore rules:**
 - Any authenticated user can **read** `members`.

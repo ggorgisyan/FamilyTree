@@ -34,3 +34,7 @@ function compressImageToDataUrl(file: File, maxSize = 700, quality = 0.8): Promi
 export async function uploadMemberPhoto(_memberId: string, file: File): Promise<string> {
   return compressImageToDataUrl(file)
 }
+
+export async function uploadEventPhoto(_memberId: string, _eventId: string, file: File): Promise<string> {
+  return compressImageToDataUrl(file)
+}

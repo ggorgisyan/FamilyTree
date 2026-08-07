@@ -79,8 +79,8 @@ sequenceDiagram
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 18 + Vite + TypeScript |
-| Styling | Tailwind CSS |
-| Tree visualization | react-d3-tree |
+| Styling | Plain CSS (`src/index.css`) |
+| Tree visualization | Custom canvas layout (in `TreeView.tsx`) |
 | Auth | Firebase Authentication (Google) |
 | Database | Cloud Firestore |
 | File storage | Firebase Storage |
@@ -140,9 +140,9 @@ npm run build
 ```
 src/
 ├── components/
-│   ├── MemberNode.tsx      # Custom tree node renderer
+│   ├── LoginLogo.tsx       # Tree medallion logo used on the login screen
 │   ├── MemberPanel.tsx     # Slide-in member detail/edit panel
-│   └── TreeView.tsx        # react-d3-tree wrapper
+│   └── TreeView.tsx        # Custom zoom/pan tree canvas
 ├── contexts/
 │   └── AuthContext.tsx     # Auth state + role provider
 ├── data/
