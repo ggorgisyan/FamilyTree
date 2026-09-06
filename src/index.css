@@ -232,6 +232,28 @@ body {
 
 .center-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; color: var(--pine); font-size: 16px; font-family: var(--serif); }
 
+/* ---------- CHATBOT ---------- */
+.chat-fab {
+  position: fixed; right: 24px; bottom: 24px; width: 56px; height: 56px; border-radius: 50%;
+  background: var(--pine); color: #f4efe2; border: none; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg); cursor: pointer; z-index: 65; transition: background .15s, transform .15s;
+}
+.chat-fab:hover { background: var(--pine-600); transform: translateY(-2px); }
+.chat-fab svg { width: 26px; height: 26px; }
+.chat-panel { width: 380px; }
+.chat-body { flex: 1; overflow: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+.chat-empty { color: var(--ink-faint); font-size: 13.5px; text-align: center; margin-top: 30px; }
+.chat-msg { max-width: 86%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; }
+.chat-msg.user { align-self: flex-end; background: var(--pine); color: #f4efe2; border-bottom-right-radius: 4px; }
+.chat-msg.assistant { align-self: flex-start; background: var(--surface-2); color: var(--ink); border: 1px solid var(--line-soft); border-bottom-left-radius: 4px; }
+.chat-mentions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-self: flex-start; max-width: 86%; }
+.chat-chip { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.chat-chip:hover { border-color: var(--pine-600); }
+.chat-foot { flex: 0 0 auto; padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+.chat-foot input { flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--surface-2); outline: none; transition: border-color .15s, box-shadow .15s; }
+.chat-foot input:focus { border-color: var(--pine-600); box-shadow: 0 0 0 4px rgba(44, 107, 86, .12); background: #fff; }
+.chat-foot .btn-primary { flex: 0 0 auto; padding: 11px 18px; }
+
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 720px) {
   .topbar { flex-wrap: wrap; height: auto; min-height: 62px; padding: 10px 14px; }
@@ -241,4 +263,5 @@ body {
   .tools .tbtn { width: 38px; padding: 0; justify-content: center; }
   .user .uname, .user .urole { display: none; }
   .panel { width: 100%; }
+  .chat-panel { width: 100%; }
 }
