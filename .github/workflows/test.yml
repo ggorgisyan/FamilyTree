@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install app dependencies
+        run: npm ci
+
+      - name: Typecheck app
+        run: npx tsc -b
+
+      - name: Run app unit/component tests
+        run: npm test
+
+      - name: Install functions dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Typecheck functions
+        run: npx tsc --noEmit
+        working-directory: functions
+
+      - name: Run functions unit tests
+        run: npm test
+        working-directory: functions

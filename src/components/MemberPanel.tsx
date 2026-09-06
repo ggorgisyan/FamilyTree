@@ -23,6 +23,7 @@ export default function MemberPanel({
   const [location, setLocation] = useState(member.location ?? '')
   const [birthYear, setBirthYear] = useState(member.birthYear?.toString() ?? '')
   const [bio, setBio] = useState(member.bio ?? '')
+  const [isPublicFigure, setIsPublicFigure] = useState(member.isPublicFigure ?? false)
   const [saving, setSaving] = useState(false)
   const [photoUploading, setPhotoUploading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -54,6 +55,7 @@ export default function MemberPanel({
     setLocation(member.location ?? '')
     setBirthYear(member.birthYear?.toString() ?? '')
     setBio(member.bio ?? '')
+    setIsPublicFigure(member.isPublicFigure ?? false)
   }
 
   const handleSave = async () => {
@@ -65,6 +67,7 @@ export default function MemberPanel({
         ...(location.trim() ? { location: location.trim() } : {}),
         ...(birthYear ? { birthYear: parseInt(birthYear) } : {}),
         ...(bio.trim() ? { bio: bio.trim() } : {}),
+        isPublicFigure,
       }
       await updateMember(updated)
       onUpdated(updated)
@@ -163,6 +166,26 @@ export default function MemberPanel({
               <div className="val empty">No memory recorded yet</div>
             )}
           </div>
+
+          {canEdit && (
+            <div className="field">
+              <div className="lab">Public figure</div>
+              {editing ? (
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                  <input
+                    type="checkbox"
+                    checked={isPublicFigure}
+                    onChange={e => setIsPublicFigure(e.target.checked)}
+                  />
+                  Allow web lookups about this person
+                </label>
+              ) : (
+                <div className={`val${member.isPublicFigure ? '' : ' empty'}`}>
+                  {member.isPublicFigure ? 'Yes — web lookups allowed' : 'No — site data only'}
+                </div>
+              )}
+            </div>
+          )}
 
           <LifeEvents member={member} canEdit={canEdit} onUpdated={onUpdated} />
 

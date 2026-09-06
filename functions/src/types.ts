@@ -1,4 +1,6 @@
-export type Role = 'viewer' | 'editor' | 'admin'
+// Mirrors src/types/index.ts from the frontend. Kept as a standalone copy
+// because `functions/` is a separate TypeScript project/deploy unit and does
+// not share a build graph with the Vite app.
 
 export type LifeEventType = 'birth' | 'relocation' | 'marriage' | 'death'
 
@@ -43,14 +45,4 @@ export interface FamilyMember {
   photoURL?: string
   events?: LifeEvent[]
   isPublicFigure?: boolean
-}
-
-export interface AppUser {
-  uid: string
-  email: string
-  displayName: string
-  photoURL: string
-  role: Role
-  firstVisit: string // ISO timestamp
-  lastVisit: string  // ISO timestamp
 }

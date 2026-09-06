@@ -6,6 +6,7 @@ import AdminPage from './pages/AdminPage'
 import TreeView from './components/TreeView'
 import type { TreeViewHandle } from './components/TreeView'
 import MemberPanel from './components/MemberPanel'
+import ChatBot from './components/ChatBot'
 import { getMembers } from './services/firestoreService'
 import { IS_ADMIN_CONFIGURED } from './firebase'
 import builtInMembers from './data/familyTree.json'
@@ -229,6 +230,8 @@ function TreeApp() {
           onNavigate={goToMember}
         />
       )}
+
+      <ChatBot membersMap={membersMap} onNavigate={goToMember} />
     </div>
   )
 }
